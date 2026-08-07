@@ -167,35 +167,28 @@ function App() {
     ].join('\n');
 
     try {
-      if (contactEndpoint) {
-        const response = await fetch(contactEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            email: formData.email,
-            eventType: formData.eventType,
-            date: formData.date,
-            message: formData.message,
-          }),
-        });
+      const submissionUrl = contactEndpoint || `https://formsubmit.co/ajax/${contactEmail}`;
+      const response = await fetch(submissionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          eventType: formData.eventType,
+          date: formData.date,
+          message: messageBody,
+          _subject: 'New inquiry from Balloon & Arches',
+          _captcha: 'false',
+          _template: 'table',
+          _next: window.location.href,
+        }),
+      });
 
-        if (!response.ok) {
-          throw new Error('The submission service did not accept the request.');
-        }
-      } else {
-        const recipient = contactEmail;
-        const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(recipient)}&su=${encodeURIComponent('New inquiry from Balloon & Arches')}&body=${encodeURIComponent(messageBody)}`;
-        const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent('New inquiry from Balloon & Arches')}&body=${encodeURIComponent(messageBody)}`;
-
-        try {
-          window.open(gmailLink, '_blank', 'noopener,noreferrer');
-        } catch {
-          window.location.href = mailtoLink;
-        }
+      if (!response.ok) {
+        throw new Error('The submission service did not accept the request.');
       }
 
       setFormData({ name: '', email: '', eventType: '', date: '', message: '' });
