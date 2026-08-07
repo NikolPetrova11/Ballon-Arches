@@ -269,7 +269,7 @@ a {
 .hero-image {
   position: absolute;
   inset: 0;
-  background-image: url('baby-shower.png');
+  background-image: url('/baby-shower.png');
   background-size: cover;
   background-position: top center;
   transform: scale(1.02);
